@@ -17,8 +17,11 @@ const permission = {
   },
   actions: {
     GenerateRoutes ({ commit }, data) {
+      // change@sun
+      // 根据后台动态生成路由的地方,默认被没有使用
       return new Promise(resolve => {
         const { token } = data
+        // alert('第一次登陆动态生成的内容')
         generatorDynamicRouter(token).then(routers => {
           commit('SET_ROUTERS', routers)
           resolve()

@@ -12,27 +12,27 @@ import { axios } from '@/utils/request'
  * @returns {*}
  */
 // 获取文章列表
-export function articleList (parameter) {
+export function docs (parameter) {
   return axios({
-    url: '/article',
+    url: '/document',
     method: 'get',
     params: parameter
   })
 }
 
 // 批量删除文章
-export function articleDelList (data) {
+export function docsDel (data) {
   // data == [id, id]
   return axios({
-    url: '/article',
+    url: '/document',
     method: 'delete',
     data: data
   })
 }
 
 // 删除一片文章
-export function articleDel (id) {
-  const url = '/article' + '/' + id
+export function docDel (id) {
+  const url = '/document' + '/' + id
   // alert(url)
   return axios({
     url: url,
@@ -40,20 +40,9 @@ export function articleDel (id) {
   })
 }
 
-// 更新一片文章的状态
-export function articleUpdateStatus (id, code) {
-  const url = '/article' + '/' + id + '/status'
-  // alert(url)
-  return axios({
-    url: url,
-    method: 'put',
-    data: code
-  })
-}
-
 // 新增一片文章
-export function articleAdd (data) {
-  const url = '/article'
+export function docAdd (data) {
+  const url = '/document'
   // alert(url)
   return axios({
     url: url,
@@ -63,23 +52,34 @@ export function articleAdd (data) {
 }
 
 // 更新一片文章
-export function articleUpdate (id, data) {
-  const url = '/article' + '/' + id
+export function docUpdate (doc_) {
+  const url = '/document' + '/' + doc_.id
   // alert(url)
   return axios({
     url: url,
     method: 'put',
-    data: data
+    data: doc_
   })
 }
 
 // 获取一片文章信息
-export function articleDetails (id) {
-  const url = '/article' + '/' + id
+export function docDetails (id) {
+  const url = '/document' + '/' + id
   // alert(url)
   return axios({
     url: url,
     method: 'get'
+  })
+}
+
+// 更新一片文章的状态
+export function docUpdateAttr (id, attrName, attrValue) {
+  const url = '/document' + '/' + id
+  return axios({
+      url: url,
+      method: 'patch',
+      params: { 'attr': attrName },
+      data: { 'value': attrValue }
   })
 }
 

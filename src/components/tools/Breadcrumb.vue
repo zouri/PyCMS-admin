@@ -19,6 +19,7 @@ export default {
     }
   },
   created () {
+    console.log('面包屑导航')
     this.getBreadcrumb()
   },
   methods: {

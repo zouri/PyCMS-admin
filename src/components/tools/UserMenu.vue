@@ -1,15 +1,16 @@
 <template>
   <div class="user-wrapper">
     <div class="content-box">
-      <a href="https://pro.loacg.com/docs/getting-started" target="_blank">
+      <!-- <a href="https://pro.loacg.com/docs/getting-started" target="_blank">
         <span class="action">
           <a-icon type="question-circle-o"></a-icon>
         </span>
-      </a>
-      <notice-icon class="action"/>
+      </a> -->
+      <!-- <notice-icon class="action"/> -->
+
       <a-dropdown>
         <span class="action ant-dropdown-link user-dropdown-menu">
-          <a-avatar class="avatar" size="small" :src="avatar"/>
+          <a-avatar class="avatar" :src="avatarSrc"/>
           <span>{{ nickname }}</span>
         </span>
         <a-menu slot="overlay" class="user-dropdown-menu-wrapper">
@@ -52,7 +53,16 @@ export default {
     NoticeIcon
   },
   computed: {
-    ...mapGetters(['nickname', 'avatar'])
+    ...mapGetters(['nickname', 'avatar']),
+    avatarSrc () {
+      if (this.avatar.length > 1) {
+        console.log(this.avatar, '阿爸爸爸爸')
+        return this.avatar
+      } else {
+        console.log('阿爸爸爸爸')
+        return '/default_avatar.svg'
+      }
+    }
 
   },
   methods: {

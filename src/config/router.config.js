@@ -54,7 +54,7 @@ export const asyncRouterMap = [
       },
       // 文档编辑界面,菜单中隐藏
       {
-        path: '/document/editor/:docId',
+        path: '/document/editor/:colId/:docId',
         name: 'document_editor',
         component: () => import('@/views/document/Editor'),
         props: true,

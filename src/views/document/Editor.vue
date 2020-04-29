@@ -78,6 +78,10 @@ export default {
     docId: {
       type: String,
       default: 'new'
+    },
+    colId: {
+      type: String,
+      default: '0'
     }
   },
   data () {
@@ -121,6 +125,7 @@ export default {
     }
   },
   created () {
+    this.column_id = parseInt(this.colId)
   },
   mounted () {
     // 如果不是新建文档则重新拉去文章内容
@@ -144,7 +149,7 @@ export default {
           .then(response => {
             this.response_data = response.data
             this.$message.success('文章创建成功!')
-            this.$router.replace('/document/editor/' + this.response_data.id)
+            this.$router.replace('/document/' + this.column_id + 'editor/' + this.response_data.id)
             this.actionModal = false
           })
           .catch(error => {
@@ -172,37 +177,6 @@ export default {
           })
       }
     },
-    // addDocument () {
-    //   docAdd(this.doc_info)
-    //     .then(response => {
-    //       this.response_data = response.data
-    //       this.$message.success('文章创建成功!')
-    //       this.$router.replace('/document/editor/' + this.response_data.id)
-    //       this.actionModal = false
-    //     })
-    //     .catch(error => {
-    //       this.$notification['error']({
-    //         message: '错误',
-    //         description: ((error.response || {}).data || {}).message || '请求出现错误，请稍后再试',
-    //         duration: 4
-    //       })
-    //     })
-    // },
-    // updateDocument () {
-    //   docUpdate(this.doc_info)
-    //     .then(response => {
-    //       this.response_data = response.data
-    //       this.$message.success('文章更新成功!')
-    //       this.actionModal = false
-    //     })
-    //     .catch(error => {
-    //       this.$notification['error']({
-    //         message: '错误',
-    //         description: ((error.response || {}).data || {}).message || '请求出现错误，请稍后再试',
-    //         duration: 4
-    //       })
-    //     })
-    // },
     deleteDocument () {
       docDel(this.docId)
         .then(response => {

@@ -74,6 +74,7 @@
           toolbar: this.toolbar,
           branding: false,
           menubar: false,
+          relative_urls: false, // 关闭转换相对路径
           content_style: `
             *                         { padding:0; margin:0; }
             html, body                { height:100%; }

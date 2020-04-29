@@ -20,10 +20,19 @@ export function GetColumns () {
 }
 
 // 创建一个栏目
-export function CreateCol (data) {
-    return axios({
-      url: '/column',
-      method: 'post',
-      data: data
-    })
-  }
+export function CreateColumn (data) {
+  return axios({
+    url: '/column',
+    method: 'post',
+    data: data
+  })
+}
+
+// 删除栏目
+export function DeleteColumns (data) {
+  return axios({
+    url: '/column',
+    method: 'delete',
+    data: data
+  })
+}

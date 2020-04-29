@@ -1,6 +1,6 @@
 <template>
   <div class="footer">
-    <div class="links">
+    <!-- <div class="links">
       <a
         href="https://pro.loacg.com/"
         target="_blank"
@@ -13,10 +13,11 @@
       </a>
       <a href="https://ant.design/">Ant Design</a>
       <a href="https://vue.ant.design/">Vue Antd</a>
-    </div>
+    </div> -->
     <div class="copyright">
       Copyright
-      <a-icon type="copyright" /> 2018 <span>白鹭学园技术组出品</span>
+      <a-icon type="copyright" /> 2020 <span>走日网络技术组出品</span>
+      <!-- <a-icon type="copyright" /> 2018 <span>白鹭学园技术组出品</span> -->
     </div>
   </div>
 </template>
@@ -33,7 +34,8 @@ export default {
 <style lang="less" scoped>
 .footer {
   padding: 0 16px;
-  margin: 48px 0 24px;
+  margin: 10px 0 5px;
+  // margin: 48px 0 24px;
   text-align: center;
 
   .links {

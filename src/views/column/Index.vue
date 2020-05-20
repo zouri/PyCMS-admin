@@ -45,7 +45,7 @@
         </a-form-item>
         <a-form-item label="栏目ID">
           <a-input
-            v-decorator="[ 'name', { rules: [{ required: true, message: '请输入栏目ID' }] }, ]"
+            v-decorator="[ 'id', { rules: [{ required: true, message: '请输入栏目ID' }] }, ]"
             placeholder="栏目ID如: 'xinwen'"
           />
         </a-form-item>
@@ -64,20 +64,13 @@ export default {
       table_data: null,
       table_columns: [
         {
-          title: 'id',
-          dataIndex: 'id',
-          width: 60
+          title: '栏目ID',
+          dataIndex: 'id'
         },
         {
           title: '栏目标题',
           dataIndex: 'title',
           scopedSlots: { customRender: 'title' }
-        },
-        {
-          title: '栏目ID',
-          dataIndex: 'name',
-          ellipsis: true,
-          scopedSlots: { customRender: 'name' }
         },
         {
           title: '操作',

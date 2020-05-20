@@ -13,7 +13,8 @@
         @change="handleTabClick"
       >
         <a-tab-pane key="tab1" tab="账号密码登录">
-          <a-alert v-if="isLoginError" type="error" showIcon style="margin-bottom: 24px;" message="请检查你的用户名密码还有图形验证码无误后再试" />
+          <a-alert v-if="isLoginError" type="error" showIcon style="margin-bottom: 24px;" message="请重新检查你的用户名密码后再试" />
+          <!-- 还有图形验证码无误后 -->
           <a-form-item>
             <a-input
               size="large"
@@ -73,7 +74,7 @@
       </a-tabs>
 
       <!-- 图形验证码-->
-      <a-row :gutter="16">
+      <a-row v-if="show_img_captcha" :gutter="16">
         <a-col class="gutter-row" :span="16">
           <a-form-item>
             <!--图片验证码-->
@@ -83,7 +84,7 @@
               autocomplete="false"
               placeholder="请输入图形验证码"
               v-decorator="[
-                'image_verification',
+                'seccode',
                 {rules: [{ required: true, length: 4, message: '请输入图形验证码' }], validateTrigger: 'blur'}
               ]"
             />
@@ -93,7 +94,7 @@
           <img :src="imgBash64" @click="updateImgCaptcha()" alt="点击刷新验证码" style="width: 100%;height: 100%;cursor: pointer;">
         </a-col>
       </a-row>
-
+      <!--
       <a-form-item>
         <a-checkbox v-decorator="['rememberMe', { valuePropName: 'checked' }]">自动登录</a-checkbox>
         <router-link
@@ -102,6 +103,7 @@
           style="float: right;"
         >忘记密码</router-link>
       </a-form-item>
+      -->
 
       <a-form-item style="margin-top:24px">
         <a-button
@@ -145,9 +147,6 @@ export default {
       loginBtn: false,
       // login type: 0 email, 1 username, 2 telephone
       loginType: 0,
-
-      imgKey: '',
-      imgBash64: '',
       isLoginError: false,
       form: this.$form.createForm(this),
       state: {
@@ -156,11 +155,15 @@ export default {
         // login type: 0 email, 1 username, 2 telephone
         loginType: 0,
         smsSendBtn: false
-      }
+      },
+
+      // 图片验证码
+      show_img_captcha: true,
+      imgKey: '',
+      imgBash64: ''
     }
   },
   created () {
-    console.log(this.form, 'for,fff')
     this.updateImgCaptcha()
   },
   methods: {
@@ -191,14 +194,14 @@ export default {
 
       state.loginBtn = true
 
-      const validateFieldsKey = customActiveKey === 'tab1' ? ['username', 'password', 'image_verification'] : ['mobile', 'captcha']
+      const validateFieldsKey = customActiveKey === 'tab1' ? ['username', 'password', 'seccode'] : ['mobile', 'captcha']
 
       validateFields(validateFieldsKey, { force: true }, (err, values) => {
         if (!err) {
           const loginParams = { ...values }
-          delete loginParams.username
-          loginParams[!state.loginType ? 'email' : 'username'] = values.username
-          // loginParams.password = md5(values.password)
+          // delete loginParams.username
+          // loginParams[!state.loginType ? 'email' : 'username'] = values.username
+          loginParams.username = values.username
           loginParams.password = values.password
           loginParams.random_key = this.imgKey
           Login(loginParams)
@@ -249,31 +252,36 @@ export default {
       })
     },
     loginSuccess (res) {
-      console.log(res)
-      // check res.homePage define, set $router.push name res.homePage
-      // Why not enter onComplete
-      /*
-      this.$router.push({ name: 'analysis' }, () => {
-        console.log('onComplete')
-        this.$notification.success({
-          message: '欢迎',
-          description: `${timeFix()}，欢迎回来`
+      if (res.error_code === 0) {
+        this.$router.push({ path: '/' })
+        // 延迟 1 秒显示欢迎信息
+        setTimeout(() => {
+          this.$notification.success({
+            message: '欢迎',
+            description: `${timeFix()}，欢迎回来`
+          })
+        }, 1000)
+        this.isLoginError = false
+        return null
+      } else {
+        this.updateImgCaptcha()
+        let description = res.message
+        if (res.error_code === 401.1) {
+          this.show_img_captcha = true
+          description = '图片验证码错误'
+        } else if (res.error_code === 401.2) {
+          description = '用户名或密码错误'
+        }
+        this.$notification['error']({
+          message: '验证错误',
+          description: description,
+          duration: 4
         })
-      })
-      */
-      this.$router.push({ path: '/' })
-      // 延迟 1 秒显示欢迎信息
-      setTimeout(() => {
-        this.$notification.success({
-          message: '欢迎',
-          description: `${timeFix()}，欢迎回来`
-        })
-      }, 1000)
-      this.isLoginError = false
+      }
     },
     requestFailed (err) {
+      console.log(err, '错误的')
       this.isLoginError = true
-      console.log(err.response, 'shshshshshsh')
       this.$notification['error']({
         message: '错误',
         description: ((err.response || {}).data || {}).message || '请求出现错误，请稍后再试',

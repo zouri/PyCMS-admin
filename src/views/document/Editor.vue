@@ -81,7 +81,7 @@ export default {
     },
     colId: {
       type: String,
-      default: '0'
+      default: 'new'
     }
   },
   data () {
@@ -92,7 +92,7 @@ export default {
       author: '',
       create_time: '',
       pub_time: '',
-      column_id: 0,
+      column_id: this.colId,
       column: 'news',
       status: 0,
       actionModal: false,
@@ -125,7 +125,6 @@ export default {
     }
   },
   created () {
-    this.column_id = parseInt(this.colId)
   },
   mounted () {
     // 如果不是新建文档则重新拉去文章内容
@@ -142,6 +141,7 @@ export default {
   methods: {
     actionDocument (action) {
       this.status = action
+      console.log(this.column_id, '这里是栏目ID')
       if (this.docId === 'new') {
         // this.addDocument()
         // 新增文档
@@ -149,7 +149,8 @@ export default {
           .then(response => {
             this.response_data = response.data
             this.$message.success('文章创建成功!')
-            this.$router.replace('/document/' + this.column_id + 'editor/' + this.response_data.id)
+            const url = '/document/' + 'editor/' + this.column_id + '/' + this.response_data.id
+            this.$router.replace(url)
             this.actionModal = false
           })
           .catch(error => {

@@ -55,11 +55,9 @@ export default {
   computed: {
     ...mapGetters(['nickname', 'avatar']),
     avatarSrc () {
-      if (this.avatar.length > 1) {
-        console.log(this.avatar, '阿爸爸爸爸')
+      if (this.avatar !== undefined && this.avatar.length > 1) {
         return this.avatar
       } else {
-        console.log('阿爸爸爸爸')
         return '/default_avatar.svg'
       }
     }

@@ -78,8 +78,7 @@ export function docUpdateAttr (id, attrName, attrValue) {
   return axios({
       url: url,
       method: 'patch',
-      params: { 'attr': attrName },
-      data: { 'value': attrValue }
+      data: { 'attr': attrName, 'value': attrValue }
   })
 }
 

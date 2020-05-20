@@ -11,7 +11,7 @@
           @change="onSelectColumn"
           style="width: 130px"
         >
-          <a-select-option :value="0" >全部栏目</a-select-option>
+          <a-select-option :value="'all'" >全部栏目</a-select-option>
           <a-select-option v-for="items in columns_data" :key="items.id" :value="items.id">
             {{ items.title }}
           </a-select-option>
@@ -25,7 +25,7 @@
 
       <div slot="extra">
         <a-button
-          :disabled="current_column === 0"
+          :disabled="current_column === 'all'"
           @click="EditDocument('new')"
           type="primary"
           class="action_btn"
@@ -98,8 +98,8 @@ export default {
       columns_data: [],
       tableData: null,
       tableLoading: true,
-      current_column: 0,
-      pageNumber: 0,
+      current_column: 'all',
+      pageNumber: 1,
       pageLimit: 15,
       dataTotal: 0
     }
@@ -211,7 +211,7 @@ export default {
     },
     GetDocumentList () {
       this.tableLoading = true
-      const param = { 'page_number': this.pageNumber, 'limit': this.pageLimit, 'column': this.current_column }
+      const param = { 'page_number': this.pageNumber, 'limit': this.pageLimit, 'column_id': this.current_column }
       docs(param)
         .then(response => {
           const data = response.data
@@ -247,7 +247,7 @@ export default {
         .then(response => {
           const data = response.data
           console.log(data, 'ok')
-          this.GetDocument()
+          this.GetDocumentList()
           this.tableLoading = false
         })
         .catch(error => {

@@ -63,10 +63,10 @@
     data () {
       return {
         tinymceInit: {
-          language_url: `/tinymce/langs/zh_CN.js`,
+          language_url: `/apps/admin/tinymce/langs/zh_CN.js`,
           language: 'zh_CN',
-          skin_url: `/tinymce/skins/ui/oxide`,
-          content_css: `/tinymce/skins/content/default/content.css`,
+          skin_url: `/apps/admin/tinymce/skins/ui/oxide`,
+          content_css: `/apps/admin/tinymce/skins/content/default/content.css`,
           // skin_url: `${this.baseUrl}/tinymce/skins/ui/oxide-dark`, // 暗色系
           // content_css: `${this.baseUrl}/tinymce/skins/content/dark/content.css`, // 暗色系
           height: 480,

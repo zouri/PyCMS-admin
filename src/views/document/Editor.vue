@@ -3,7 +3,7 @@
     <a-card>
       <div slot="title" style="margin-right: 10px">
         <span>
-          <span v-if="status != 'new'" >编辑文章</span>
+          <span v-if="status !== 'new'" >编辑文章</span>
           <span v-else>新建文章</span>
         </span>
         <span style="margin-left: 6px;">
@@ -22,7 +22,7 @@
         <a-button @click="actionModal = true" type="primary" class="action_btn">
           保存/发布
         </a-button>
-        <a-popconfirm v-if="docId !== 'new'" title="删掉这篇文章?" @confirm="() => deleteDocument()" >
+        <a-popconfirm v-if="doc_id !== 'new'" title="删掉这篇文章?" @confirm="() => deleteDocument()" >
           <a-button type="danger" class="action_btn" >
             删除
           </a-button>
@@ -30,9 +30,14 @@
       </div>
 
       <!-- 预览和标题 -->
-      <a-row>
-        <a-col :span="22">
+      <a-row :gutter="4">
+        <a-col :span="20">
           <textarea v-model="title" rows="1" type="textarea" class="title_input" placeholder="在这里输入你的标题" />
+        </a-col>
+        <a-col :span="2">
+          <a-button @click="$refs.modal.edit(cover)" class="action_btn" style="width: 100%" title="封面图片管理" >
+            封面图片
+          </a-button>
         </a-col>
         <a-col :span="2">
           <a-button @click="previewModal = true" class="action_btn" style="width: 100%" icon="eye" >
@@ -63,26 +68,21 @@
       <div style="text-align: center"><h2>{{ title }}</h2></div>
       <div v-html="content"></div>
     </a-modal>
+
+    <!-- 封面图片 -->
+    <cover-modal ref="modal" @ok="setCover"/>
   </div>
 </template>
 
 <script>
+import CoverModal from './CoverModal'
 import { docDel, docUpdateAttr, docDetails, docUpdate, docAdd } from '@/api/document_manager'
 import TinymceEditor from '@/components/Editor/Tinymce'
 export default {
   name: 'DocumentEditor',
   components: {
-    'editor': TinymceEditor
-  },
-  props: {
-    docId: {
-      type: String,
-      default: 'new'
-    },
-    colId: {
-      type: String,
-      default: 'new'
-    }
+    'editor': TinymceEditor,
+    CoverModal
   },
   data () {
     return {
@@ -92,27 +92,35 @@ export default {
       author: '',
       create_time: '',
       pub_time: '',
-      column_id: this.colId,
-      column: 'news',
+      column: '',
       status: 0,
+      coverModal: false,
       actionModal: false,
       actionModalLoading: false,
-      previewModal: false
+      previewModal: false,
+      cover: ''
     }
   },
   computed: {
+    doc_id () {
+      return this.$route.params.docId
+    },
+    column_id () {
+      return this.$route.params.colId
+    },
     doc_info () {
       return {
-        id: this.docId,
+        id: this.doc_id,
         title: this.title,
         content: this.content,
         column_id: this.column_id,
-        status: this.status
+        status: this.status,
+        cover: this.cover
       }
     }
   },
   watch: {
-    response_data (newV) {
+    response_data (newV, oldV) {
       const data = newV
       this.title = data.title
       this.content = data.content_html
@@ -120,16 +128,18 @@ export default {
       this.create_time = data.create_time
       this.pub_time = data.pub_time
       this.column = data.column
-      this.column_id = data.column_id
       this.status = data.status
+      this.cover = data.cover
     }
   },
   created () {
+    // console.log('栏目route', this.$route.params)
+    console.log(this.column_id, this.column_id, this.column_id)
   },
   mounted () {
     // 如果不是新建文档则重新拉去文章内容
-    if (this.docId !== 'new') {
-      docDetails(this.docId)
+    if (this.doc_id !== 'new') {
+      docDetails(this.doc_id)
       .then(response => {
         this.response_data = response.data
       })
@@ -141,10 +151,17 @@ export default {
   methods: {
     actionDocument (action) {
       this.status = action
-      console.log(this.column_id, '这里是栏目ID')
-      if (this.docId === 'new') {
-        // this.addDocument()
-        // 新增文档
+      if (this.column_id === '') {
+        this.$notification['error']({
+          message: '错误',
+          description: '栏目ID不允许为空',
+          duration: 4
+        })
+        return
+      }
+      console.log('doc_info', this.doc_info)
+      console.log('doc_info', this.doc_info)
+      if (this.doc_id === 'new') {
         docAdd(this.doc_info)
           .then(response => {
             this.response_data = response.data
@@ -179,7 +196,7 @@ export default {
       }
     },
     deleteDocument () {
-      docDel(this.docId)
+      docDel(this.doc_id)
         .then(response => {
           this.$router.replace('/document_manager')
         })
@@ -192,7 +209,7 @@ export default {
         })
     },
     updateStatus (statusCode) {
-      docUpdateAttr(this.docId, 'status', statusCode)
+      docUpdateAttr(this.doc_id, 'status', statusCode)
         .then(response => {
           this.response_data = response.data
           this.$message.success('文章状态更新成功!')
@@ -205,6 +222,9 @@ export default {
             duration: 4
           })
         })
+    },
+    setCover (url) {
+      this.cover = url
     }
   }
 }

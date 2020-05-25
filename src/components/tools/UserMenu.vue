@@ -58,7 +58,7 @@ export default {
       if (this.avatar !== undefined && this.avatar.length > 1) {
         return this.avatar
       } else {
-        return '/default_avatar.svg'
+        return '/apps/admin/default_avatar.svg'
       }
     }
 

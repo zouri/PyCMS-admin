@@ -2,6 +2,7 @@
 import * as loginService from '@/api/login'
 // eslint-disable-next-line
 import { BasicLayout, BlankLayout, PageView, RouteView } from '@/layouts'
+// import { UserLayout, BasicLayout, RouteView, BlankLayout, PageView } from '@/layouts'
 
 // 前端路由表
 const constantRouterComponents = {
@@ -9,50 +10,24 @@ const constantRouterComponents = {
   BasicLayout: BasicLayout,
   BlankLayout: BlankLayout,
   RouteView: RouteView,
-  PageView: PageView,
   '403': () => import(/* webpackChunkName: "error" */ '@/views/exception/403'),
   '404': () => import(/* webpackChunkName: "error" */ '@/views/exception/404'),
   '500': () => import(/* webpackChunkName: "error" */ '@/views/exception/500'),
-
-  // 你需要动态引入的页面组件
-  'Workplace': () => import('@/views/dashboard/Workplace'),
-  'Analysis': () => import('@/views/dashboard/Analysis'),
-
-  // form
-  'BasicForm': () => import('@/views/form/BasicForm'),
-  'StepForm': () => import('@/views/form/stepForm/StepForm'),
-  'AdvanceForm': () => import('@/views/form/advancedForm/AdvancedForm'),
-
-  // list
-  'TableList': () => import('@/views/list/TableList'),
-  'StandardList': () => import('@/views/list/StandardList'),
-  'CardList': () => import('@/views/list/CardList'),
-  'SearchLayout': () => import('@/views/list/search/SearchLayout'),
-  'SearchArticles': () => import('@/views/list/search/Article'),
-  'SearchProjects': () => import('@/views/list/search/Projects'),
-  'SearchApplications': () => import('@/views/list/search/Applications'),
-  'ProfileBasic': () => import('@/views/profile/basic/Index'),
-  'ProfileAdvanced': () => import('@/views/profile/advanced/Advanced'),
-
-  // result
-  'ResultSuccess': () => import(/* webpackChunkName: "result" */ '@/views/result/Success'),
-  'ResultFail': () => import(/* webpackChunkName: "result" */ '@/views/result/Error'),
 
   // exception
   'Exception403': () => import(/* webpackChunkName: "fail" */ '@/views/exception/403'),
   'Exception404': () => import(/* webpackChunkName: "fail" */ '@/views/exception/404'),
   'Exception500': () => import(/* webpackChunkName: "fail" */ '@/views/exception/500'),
 
-  // account
-  'AccountCenter': () => import('@/views/account/center/Index'),
-  'AccountSettings': () => import('@/views/account/settings/Index'),
-  'BaseSettings': () => import('@/views/account/settings/BaseSetting'),
-  'SecuritySettings': () => import('@/views/account/settings/Security'),
-  'CustomSettings': () => import('@/views/account/settings/Custom'),
-  'BindingSettings': () => import('@/views/account/settings/Binding'),
-  'NotificationSettings': () => import('@/views/account/settings/Notification'),
+  // 你需要动态引入的页面组件
+  'IndexManager': () => import('@/views/dashboard/Analysis'),
 
-  'TestWork': () => import(/* webpackChunkName: "TestWork" */ '@/views/dashboard/TestWork')
+  // 文章管理
+  'DocumentManager': () => import(/* webpackChunkName: "fail" */ '@/views/document/Index'),
+  'DocumentEdit': () => import(/* webpackChunkName: "fail" */ '@/views/document/Editor'),
+
+  // 栏目管理
+  'ColumnManager': () => import(/* webpackChunkName: "fail" */ '@/views/column/Index')
 }
 
 // 前端未找到页面路由（固定不用改）
@@ -60,13 +35,64 @@ const notFoundRouter = {
   path: '*', redirect: '/404', hidden: true
 }
 
+// 其他固定URl
+const otherRouter = [
+  {
+    id: 'index',
+    name: 'IndexManager',
+    parentId: 'root',
+    path: '/index',
+    meta: {
+      icon: 'dashboard',
+      title: '首页管理',
+      show: true
+    },
+    component: 'IndexManager'
+  },
+  {
+    id: 'column',
+    name: 'ColumnManager',
+    path: '/column',
+    // parentId: 'root',
+    meta: {
+      icon: 'align-left',
+      title: '栏目管理',
+      show: true
+    },
+    component: 'ColumnManager'
+  },
+  {
+    id: 'document',
+    parentId: 'root',
+    name: '文章管理',
+    meta: {
+      icon: 'cluster',
+      title: '文章管理',
+      show: true
+    },
+    component: 'RouteView',
+    redirect: '/document/news'
+  },
+  {
+    id: 'editor',
+    name: 'DocumentEdit',
+    path: '/document/editor/:colId/:docId',
+    props: true,
+    meta: {
+      title: '编辑文档',
+      show: false
+    },
+    component: 'DocumentEdit'
+  }
+]
+
 // 根级菜单
 const rootRouter = {
   key: '',
   name: 'index',
   path: '',
   component: 'BasicLayout',
-  redirect: '/dashboard',
+  redirect: '/index',
   meta: {
     title: '首页'
   },
@@ -81,12 +107,16 @@ const rootRouter = {
 export const generatorDynamicRouter = (token) => {
   return new Promise((resolve, reject) => {
     loginService.getCurrentUserNav(token).then(res => {
-      console.log('res', res)
-      const { result } = res
+      // console.log('res', 'res', res.data)
+      const { data } = res
+      otherRouter.forEach(item => {
+        data.push(item)
+      })
       const menuNav = []
       const childrenNav = []
-      //      后端数据, 根级树数组,  根级 PID
-      listToTree(result, childrenNav, 0)
+      // 后端数据, 根级树数组,  根级 PID
+      listToTree(data, childrenNav, 'root')
+      // 添加其他路由
       rootRouter.children = childrenNav
       menuNav.push(rootRouter)
       console.log('menuNav', menuNav)
@@ -109,6 +139,7 @@ export const generatorDynamicRouter = (token) => {
  */
 export const generator = (routerMap, parent) => {
   return routerMap.map(item => {
+    console.log(item, '这里是栏目')
     const { title, show, hideChildren, hiddenHeaderContent, target, icon } = item.meta || {}
     const currentRouter = {
       // 如果路由设置了 path，则作为默认 path，否则 路由地址 动态拼接生成如 /dashboard/workplace

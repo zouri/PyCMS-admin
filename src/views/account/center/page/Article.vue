@@ -32,12 +32,12 @@
 
 <script>
 import { ArticleListContent } from '@/components'
-import IconText from '@/views/list/search/components/IconText'
+// import IconText from '@/views/list/search/components/IconText'
 
 export default {
   name: 'Article',
   components: {
-    IconText,
+    // IconText,
     ArticleListContent
   },
   data () {

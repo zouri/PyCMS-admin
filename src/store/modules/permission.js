@@ -9,7 +9,7 @@ import { asyncRouterMap, constantRouterMap } from '@/config/router.config'
  */
 function hasPermission (permission, route) {
   // change@sun
-  // 判断角色是否有指定路由的权限,方便测试
+  // 判断角色是否有指定路由的权限,方便测试,一律通过
   console.log('一律通过')
   return true
   // if (route.meta && route.meta.permission) {
@@ -70,8 +70,6 @@ const permission = {
     GenerateRoutes ({ commit }, data) {
       // change@sun
       // 根据权限生成路由的地方
-      // console.log(data, '重新刷新路由')
-      // alert('生成路由')
       return new Promise(resolve => {
         const { roles } = data
         console.log(roles, 'roles roles roles')

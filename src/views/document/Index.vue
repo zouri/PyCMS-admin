@@ -3,20 +3,6 @@
     <a-card :bodyStyle="{padding: 0}">
       <div slot="title">
         <span style="margin-right: 30px">文档管理</span>
-        <!-- <span style="margin-right: 5px">栏目</span> -->
-        <a-select
-          showSearch
-          :defaultValue="current_column"
-          placeholder="选择一个栏目"
-          @change="onSelectColumn"
-          style="width: 130px"
-        >
-          <a-select-option :value="'all'" >全部栏目</a-select-option>
-          <a-select-option v-for="items in columns_data" :key="items.id" :value="items.id">
-            {{ items.title }}
-          </a-select-option>
-        </a-select>
-
         <a-button icon="sync" @click="GetDocumentList" :loading="tableLoading" title="刷新本地数据" class="action_btn" />
         <!-- <a-input-search placeholder="输入你的关键词" @search="onSearch">
           <a-button type="primary" icon="sync" @click="GetDocumentList"></a-button>
@@ -25,7 +11,6 @@
 
       <div slot="extra">
         <a-button
-          :disabled="current_column === 'all'"
           @click="EditDocument('new')"
           type="primary"
           class="action_btn"
@@ -53,7 +38,7 @@
           :pagination="pagination"
           :rowSelection="{ selectedRowKeys: selected_row_keys, onChange: onSelectChange }"
           @change="onPageChange"
-          :scroll="{ y: table_heigth}"
+          :scroll="{ y: table_height}"
         >
           <span slot="status" slot-scope="status">
             <a-tag v-if="status === 2" :color="'green'" :key="status">已发布</a-tag>
@@ -74,11 +59,6 @@
             <a-button @click="EditDocument(row.id)" size="small" class="action_btn" >
               编辑
             </a-button>
-            <!-- <a-popconfirm title="删掉这篇文章?" @confirm="() => onDelete(row)" >
-              <a-button type="danger" size="small" class="action_btn" >
-                删除
-              </a-button>
-            </a-popconfirm> -->
           </template>
 
         </a-table>
@@ -89,7 +69,6 @@
 
 <script>
 import { docs, docsDel, docUpdateAttr } from '@/api/document_manager'
-import { GetColumns } from '@/api/column_manager'
 export default {
   name: 'DocumentManager',
   data () {
@@ -106,11 +85,6 @@ export default {
   },
   computed: {
     pagination () {
-      // const data = {
-      //   current: this.pageNumber,
-      //   defaultPageSize: this.pageLimit,
-      //   total: this.dataTotal
-      // }
       return {
 				pageSize: 10, // 默认每页显示数量
 				showSizeChanger: true, // 显示可改变每页数量
@@ -172,7 +146,7 @@ export default {
         }
       ]
     },
-    table_heigth () {
+    table_height () {
       const h = document.documentElement.clientHeight || document.body.clientHeight
       console.log(h)
       return h - 350
@@ -181,15 +155,11 @@ export default {
       return !this.selected_row_keys.length > 0
     }
   },
-  created () {
-    GetColumns()
-      .then(response => {
-        console.log(response.data)
-        this.columns_data = response.data
-      })
-      .catch(error => {
-        console.log(error)
-      })
+  watch: {
+    '$route' (to, from) {
+      // 获取当前栏目
+      this.GetDocumentList()
+    }
   },
   mounted () {
     // this.modalWidth = window.outerWidth / 2
@@ -197,7 +167,6 @@ export default {
   },
   methods: {
     onSelectColumn (e) {
-      this.current_column = e
       this.GetDocumentList()
     },
     onSelectChange (selectedRowKeys) {
@@ -211,6 +180,8 @@ export default {
     },
     GetDocumentList () {
       this.tableLoading = true
+      // 获取当前栏目
+      this.current_column = this.$route.path.replace('/document/', '').replace('/', '')
       const param = { 'page_number': this.pageNumber, 'limit': this.pageLimit, 'column_id': this.current_column }
       docs(param)
         .then(response => {
@@ -236,10 +207,7 @@ export default {
         })
     },
     EditDocument (docId) {
-      const columnId = this.current_column
-      if (columnId !== 0) {
-        this.$router.push({ path: `/document/editor/${columnId}/${docId}` })
-      }
+      this.$router.push({ path: `/document/editor/${this.current_column}/${docId}` })
     },
     UpdateStatus (row, statusCode) {
       this.tableLoading = true

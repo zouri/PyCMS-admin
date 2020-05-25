@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { GetColumns, CreateCol } from '@/api/column_manager'
+import { GetColumns } from '@/api/column_manager'
 export default {
   name: 'ColumnManager',
   data () {
@@ -93,7 +93,7 @@ export default {
       console.log('abcdef')
     },
     delColumn () {
-      CreateCol()
+      // CreateCol()
       console.log('删除,删除')
     }
   }

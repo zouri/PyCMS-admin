@@ -94,7 +94,6 @@ export default {
       pub_time: '',
       column: '',
       status: 0,
-      coverModal: false,
       actionModal: false,
       actionModalLoading: false,
       previewModal: false,

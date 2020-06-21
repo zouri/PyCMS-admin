@@ -20,7 +20,10 @@ const constantRouterComponents = {
   'Exception500': () => import(/* webpackChunkName: "fail" */ '@/views/exception/500'),
 
   // 你需要动态引入的页面组件
-  'IndexManager': () => import('@/views/dashboard/Analysis'),
+  // 'IndexManager': () => import('@/views/dashboard/Analysis'),
+  'IndexManager': () => import('@/views/banner/Index'),
+  'IndexBanner': () => import('@/views/banner/Index'),
+  'CacheManager': () => import('@/views/banner/Index'),
 
   // 文章管理
   'DocumentManager': () => import(/* webpackChunkName: "fail" */ '@/views/document/Index'),
@@ -39,43 +42,79 @@ const notFoundRouter = {
 const otherRouter = [
   {
     id: 'index',
-    name: 'IndexManager',
+    name: 'index',
     parentId: 'root',
     path: '/index',
     meta: {
       icon: 'dashboard',
-      title: '首页管理',
+      title: '网站设置',
       show: true
     },
     component: 'IndexManager'
   },
   {
+    id: 'banner',
+    name: 'banner',
+    parentId: 'index',
+    meta: {
+      icon: 'picture',
+      title: '轮播图管理',
+      show: true
+    },
+    path: '/index/banner',
+    component: 'IndexBanner'
+  },
+  {
+    id: 'connect_us',
+    name: 'connect_us',
+    parentId: 'index',
+    meta: {
+      icon: 'picture',
+      title: '联系我们',
+      show: true
+    },
+    path: '/index/connect_us',
+    component: 'IndexBanner'
+  },
+  {
     id: 'column',
-    name: 'ColumnManager',
+    name: 'column',
     path: '/column',
-    // parentId: 'root',
+    parentId: 'root',
     meta: {
       icon: 'align-left',
       title: '栏目管理',
-      show: true
+      show: false
     },
     component: 'ColumnManager'
   },
   {
     id: 'document',
     parentId: 'root',
-    name: '文章管理',
+    name: 'document',
     meta: {
       icon: 'cluster',
-      title: '文章管理',
+      title: '信息管理',
       show: true
     },
     component: 'RouteView',
     redirect: '/document/news'
   },
   {
+    id: 'cache',
+    parentId: 'root',
+    name: 'cache',
+    meta: {
+      icon: 'cluster',
+      title: '网站缓存',
+      show: true
+    },
+    component: 'CacheManager'
+  },
+  {
     id: 'editor',
-    name: 'DocumentEdit',
+    name: 'editor',
+    parentId: 'root',
     path: '/document/editor/:colId/:docId',
     props: true,
     meta: {
@@ -119,10 +158,10 @@ export const generatorDynamicRouter = (token) => {
       // 添加其他路由
       rootRouter.children = childrenNav
       menuNav.push(rootRouter)
-      console.log('menuNav', menuNav)
+      // console.log('menuNav', menuNav)
       const routers = generator(menuNav)
       routers.push(notFoundRouter)
-      console.log('routers', routers)
+      // console.log('routers', routers)
       resolve(routers)
     }).catch(err => {
       reject(err)
@@ -139,7 +178,7 @@ export const generatorDynamicRouter = (token) => {
  */
 export const generator = (routerMap, parent) => {
   return routerMap.map(item => {
-    console.log(item, '这里是栏目')
+    // console.log(item, '这里是栏目')
     const { title, show, hideChildren, hiddenHeaderContent, target, icon } = item.meta || {}
     const currentRouter = {
       // 如果路由设置了 path，则作为默认 path，否则 路由地址 动态拼接生成如 /dashboard/workplace

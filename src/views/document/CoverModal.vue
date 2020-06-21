@@ -76,7 +76,6 @@ export default {
   },
   computed: {
     is_previews () {
-      console.log(this.url, 'urlrllrrll')
       return this.url === null
     }
   },
@@ -134,7 +133,7 @@ export default {
               console.log('upload response:', response)
               if (response.error_code === 0) {
                 _this.$message.success('上传成功')
-                _this.$emit('ok', response.data.url)
+                _this.$emit('ok', '/static/upload_file/' + response.data.abs_path)
                 _this.visible = false
               } else {
                 _this.$message.danger('上传失败')

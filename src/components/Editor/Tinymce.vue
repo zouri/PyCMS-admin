@@ -136,12 +136,12 @@
                 response = JSON.parse(xhr.responseText)
                 console.log(response, '这里是数据')
                 console.log(typeof response.data, '这里是数据类型')
-                if (!response.data || typeof response.data.url !== 'string') {
+                if (!response.data || typeof response.data.abs_path !== 'string') {
                   failure('Invalid JSON: ' + xhr.responseText)
                   return
                 }
-                console.log(response.data.url)
-                success(response.data.url)
+                console.log(response.data.abs_path)
+                success('/static/upload_file/' + response.data.abs_path)
               }
               formData = new FormData()
               formData.append('file', blobInfo.blob(), blobInfo.filename())

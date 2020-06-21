@@ -14,7 +14,7 @@
           @click="EditDocument('new')"
           type="primary"
           class="action_btn"
-          title="新建文章需要左侧选择指定栏目"
+          title="新建文章"
         >
           新建
         </a-button>
@@ -207,6 +207,8 @@ export default {
         })
     },
     EditDocument (docId) {
+      console.log(`/document/editor/${this.current_column}/${docId}`)
+      alert(1)
       this.$router.push({ path: `/document/editor/${this.current_column}/${docId}` })
     },
     UpdateStatus (row, statusCode) {

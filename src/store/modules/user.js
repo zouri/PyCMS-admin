@@ -54,8 +54,8 @@ const user = {
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
         getInfo().then(response => {
-          console.log(response, '返回数据')
-          console.log(response.data, '返回数据')
+          // console.log(response, '返回数据')
+          // console.log(response.data, '返回数据')
           const result = response.data
 
           commit('SET_ROLES', result.role)

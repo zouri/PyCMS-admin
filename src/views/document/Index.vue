@@ -229,7 +229,7 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   .action_btn {
     margin: 2px 2px 2px 2px
   }

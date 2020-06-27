@@ -1,23 +1,42 @@
 <template>
   <div class="clearfix">
-    <a-card title="轮播图管理">
+    <a-card>
+      <div slot="title">
+        <span style="margin-right: 30px">轮播图管理</span>
+        <a-button icon="sync" @click="getBannerList" :loading="tableLoading" title="刷新本地数据" class="action_btn" />
+      </div>
       <div slot="extra">
+        <a-popconfirm
+          title="确认删除这些图片吗?"
+          @confirm="delFewBanner"
+          okText="Yes"
+          cancelText="No"
+          :disabled="has_selected"
+        >
+          <a-button :disabled="has_selected" type="danger" class="action_btn">删除</a-button>
+        </a-popconfirm>
         <a-button @click="$refs.edit_banner.edit('new')" type="primary" title="添加图片" >
           添加
         </a-button>
       </div>
       <a-row>
-        <a-table :columns="columns" :data-source="dataListPre">
+        <a-table
+          :columns="columns"
+          :data-source="dataList"
+          :loading="tableLoading"
+          :rowSelection="{ selectedRowKeys: selected_row_keys, onChange: onSelectChange }"
+          rowKey="id"
+        >
           <span slot="id" slot-scope="id">
             #{{ id }}
           </span>
           <span slot="url" slot-scope="url">
             <img :src="url" style="height: 80px">
           </span>
-          <template slot="operation" slot-scope="text, row">
+          <template slot="operation" slot-scope="text, row" >
             <a @click="$refs.edit_banner.edit(row)">编辑</a>
             <a-divider type="vertical" />
-            <a>删除</a>
+            <a @click="delFewBanner(row.id)">删除</a>
           </template>
         </a-table>
       </a-row>
@@ -37,7 +56,7 @@
   </div>
 </template>
 <script>
-import { banner, setBanner } from '@/api/public_info'
+import { BannersManager } from '@/api/public_info'
 import BannerEditModal from './BannerModal'
 // 1280 520
 function getBase64 (file) {
@@ -58,8 +77,8 @@ const columns = [
   },
   {
     title: '类型',
-    dataIndex: 'type',
-    key: 'type',
+    dataIndex: 'type_',
+    key: 'type_',
     width: 100
   },
   {
@@ -76,7 +95,7 @@ const columns = [
     key: 'title'
   },
   {
-    title: '链接',
+    title: '链接地址',
     dataIndex: 'link_url',
     key: 'link_url'
   },
@@ -99,40 +118,60 @@ export default {
   },
   data () {
     return {
+      tableLoading: true,
       previewVisible: false,
       previewImage: '',
       columns: columns,
       dataList: [],
-      dataListPre: [
-        {
-          id: 1,
-          type: 'index',
-          order_id: 1,
-          title: '这里是标题标题',
-          url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-          link_url: 'http://zouri.net'
-        }
-      ]
+      dataListPre: [],
+      selected_row_keys: []
     }
   },
   computed: {
-  },
-  created () {
-    this.dataList.forEach(item => {
-      this.dataListPre.push(item)
-    })
+    has_selected () {
+      return !this.selected_row_keys.length > 0
+    }
   },
   mounted () {
     this.getBannerList()
   },
   methods: {
     getBannerList () {
-      banner().then(response => {
-        this.dataList = response.data
-      })
+      this.tableLoading = true
+      BannersManager('get')
+        .then(res => {
+          // console.log(res)
+          if (res.error_code !== 0) {
+            this.$message.error('获取数据失败')
+          } else {
+            this.dataList = res.data
+          }
+          this.tableLoading = false
+        })
+        .catch(error => {
+          console.log(error)
+          this.tableLoading = false
+        })
     },
-    setBannerList () {
-      setBanner()
+    delFewBanner (id) {
+      let d = this.selected_row_keys
+      if (id !== undefined) {
+        d = [id]
+      }
+      this.tableLoading = true
+      BannersManager('delete', d)
+        .then(reponse => {
+          this.$message.success('删除成功')
+          this.getBannerList()
+        })
+        .catch(error => {
+          console.log(error)
+          this.$message.error('删除失败')
+        })
+    },
+    onSelectChange (selectedRowKeys) {
+      // console.log('selectedRowKeys changed: ', selectedRowKeys)
+      this.selected_row_keys = selectedRowKeys
     },
     handleCancel () {
       this.previewVisible = false
@@ -150,6 +189,8 @@ export default {
   }
 }
 </script>
-<style>
-
+<style scoped>
+.action_btn {
+    margin: 2px 2px 2px 2px
+  }
 </style>

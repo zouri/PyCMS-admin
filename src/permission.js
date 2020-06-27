@@ -31,8 +31,8 @@ router.beforeEach((to, from, next) => {
           .dispatch('GetInfo')
           .then(res => {
             const roles = res.data && res.data.role
-            console.log(roles, 'roles')
-            console.log(res, 'res')
+            // console.log(roles, 'roles')
+            // console.log(res, 'res')
             // alert('生成路由之前')
             store.dispatch('GenerateRoutes', { roles }).then(() => {
               // 根据roles权限生成可访问的路由表

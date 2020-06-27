@@ -9,7 +9,7 @@
       <a-form-item label="自定义类型">
         <a-select
           v-decorator="[
-            'type',
+            'type_',
             {
               initialValue: 'index',
               rules: [{ required: true, message: 'Please select your gender!' }]
@@ -23,7 +23,7 @@
         <a-input-number
           style="width: 100%"
           v-decorator="[
-            'orders_id',
+            'order_id',
             {
               initialValue: 100,
               rules: [{ required: true, message: '请输入类型!' }]
@@ -33,10 +33,10 @@
       </a-form-item>
       <a-form-item label="图片">
         <a-upload
-          action="/apps/api/upload/img"
+          action="/apps/api/media/upload"
           list-type="picture"
           :headers="headers"
-          :file-list="fileList"
+          :file-list="bannerList"
           @change="handleChange"
           v-decorator="[
             'img',
@@ -83,7 +83,7 @@
 <script>
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import { setBanner } from '@/api/public_info'
+import { UpdateBanner, BannersManager } from '@/api/public_info'
 export default {
   data () {
     return {
@@ -92,7 +92,8 @@ export default {
       },
       visible: false,
       title: '',
-      fileList: []
+      bannerList: [],
+      bannerInfo: null
     }
   },
   computed: {
@@ -105,9 +106,11 @@ export default {
       this.visible = true
       if (t === 'new') {
         this.title = '添加图片'
+        this.bannerInfo = t
       } else {
         this.title = '修改图片'
-        this.fileList = [{
+        this.bannerInfo = t
+        this.bannerList = [{
           uid: '-1',
           name: t.title,
           status: 'done',
@@ -118,56 +121,61 @@ export default {
           Object.keys(values).forEach((k) => {
               values[k] = t[k]
           })
-          values.img = this.fileList[0]
+          values.img = this.bannerInfo
           this.form.setFieldsValue(values)
         })
       }
     },
     handleChange (info) {
-      let fileList = [...info.fileList]
-      fileList = fileList.slice(-1)
-      fileList = fileList.map(file => {
-        if (file.response) {
-          const u = file.response.data.abs_url
-          file.url = u
-          // if (u.indexOf('http') >= 0) {
-          //   file.url = u
-          // } else {
-          //   file.url = u
-          // }
+      let bannerList = [...info.fileList]
+      bannerList = bannerList.slice(-1)
+      bannerList = bannerList.map(file => {
+        if (file.response && file.response.error_code === 0) {
+          const data = file.response.data
+          this.bannerInfo = data
         }
         return file
       })
-      this.fileList = fileList
+      this.bannerList = bannerList
+    },
+    addBanner (data) {
+      BannersManager('post', data)
+        .then(response => {
+          this.$message.success('新增成功')
+          this.visible = false
+        })
+        .catch(response => {
+          this.$message.error('上传失败')
+        })
+    },
+    modifyBanner (id, data) {
+      UpdateBanner(id, data)
+        .then(response => {
+          this.$message.success('修改成功')
+          this.visible = false
+        })
+        .catch(response => {
+          this.$message.error('修改失败')
+        })
     },
     handleSubmit (e) {
       e.preventDefault()
-      // 判断是新上传的还是老的文件
-      const f = this.fileList[0]
-      let imgName = ''
-      if (f.url === undefined) {
-        // 新上传
-        imgName = f.response.data.url
-      } else {
-        imgName = f.url
-      }
       this.form.validateFields((err, values) => {
         if (!err) {
+          // 判断是新上传的还是老的文件
           const data = {
             'title': values.title,
-            'orders_id': values.orders_id,
+            'order_id': values.order_id,
             'link_url': values.link_url,
-            'type': values.type,
-            'img_name': imgName
+            'type_': values.type_,
+            'img_id': this.bannerInfo.file_id
           }
-          setBanner(data)
-            .then(response => {
-              this.$message.success('成功上传')
-            })
-            .catch(response => {
-              this.$message.error('失败上传')
-            })
-          console.log('Received values of form: ', data)
+          if (this.bannerInfo.id === undefined) {
+            this.addBanner(data)
+          } else {
+            this.modifyBanner(this.bannerInfo.id, data)
+          }
+          // console.log('Received values of form: ', data)
         }
       })
     },
@@ -175,7 +183,7 @@ export default {
       callback()
     },
     cancelHandel () {
-      this.fileList = []
+      this.bannerList = []
       this.form.resetFields()
       this.visible = false
     }

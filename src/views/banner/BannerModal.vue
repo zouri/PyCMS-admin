@@ -142,6 +142,7 @@ export default {
       BannersManager('post', data)
         .then(response => {
           this.$message.success('新增成功')
+          this.$emit('ok')
           this.visible = false
         })
         .catch(response => {
@@ -152,6 +153,7 @@ export default {
       UpdateBanner(id, data)
         .then(response => {
           this.$message.success('修改成功')
+          this.$emit('ok')
           this.visible = false
         })
         .catch(response => {

@@ -18,7 +18,7 @@
         >
           新建
         </a-button>
-        <a-popconfirm
+        <!-- <a-popconfirm
           title="确认删除这些栏目吗?"
           @confirm="delFewDocument"
           okText="Yes"
@@ -26,7 +26,8 @@
           :disabled="has_selected"
         >
           <a-button :disabled="has_selected" type="danger" class="action_btn">删除</a-button>
-        </a-popconfirm>
+        </a-popconfirm> -->
+        <a-button :disabled="has_selected" @click="showConfirm" type="danger" class="action_btn">删除</a-button>
       </div>
       <a-row>
         <a-table
@@ -166,6 +167,16 @@ export default {
     this.GetDocumentList()
   },
   methods: {
+    showConfirm () {
+      this.$confirm({
+        title: '删除',
+        content: '确认删除这些栏目吗？',
+        onOk () {
+          this.delFewDocument()
+        },
+        onCancel () {}
+      })
+    },
     onSelectColumn (e) {
       this.GetDocumentList()
     },

@@ -6,7 +6,7 @@
         <a-button icon="sync" @click="getBannerList" :loading="tableLoading" title="刷新本地数据" class="action_btn" />
       </div>
       <div slot="extra">
-        <a-popconfirm
+        <!-- <a-popconfirm
           title="确认删除这些图片吗?"
           @confirm="delFewBanner"
           okText="Yes"
@@ -14,7 +14,8 @@
           :disabled="has_selected"
         >
           <a-button :disabled="has_selected" type="danger" class="action_btn">删除</a-button>
-        </a-popconfirm>
+        </a-popconfirm> -->
+        <a-button :disabled="has_selected" @click="showConfirm" type="danger" class="action_btn">删除</a-button>
         <a-button @click="$refs.edit_banner.edit('new')" type="primary" title="添加图片" >
           添加
         </a-button>
@@ -36,23 +37,23 @@
           <template slot="operation" slot-scope="text, row" >
             <a @click="$refs.edit_banner.edit(row)">编辑</a>
             <a-divider type="vertical" />
-            <a @click="delFewBanner(row.id)">删除</a>
+
+            <a-popconfirm
+              title="确认删除这条吗"
+              ok-text="Yes"
+              cancel-text="No"
+              @confirm="delFewBanner(row.id)"
+              @cancel="cancel"
+            >
+              <a href="#">删除</a>
+            </a-popconfirm>
           </template>
         </a-table>
       </a-row>
       <a-divider>效果预览</a-divider>
-      <!-- <a-row>
-        <a-col :span="24">
-          <a-carousel autoplay>
-            <img v-for="item in dataListPre" :key="item.url" :src="item.url" :alt="item.url" />
-          </a-carousel>
-        </a-col>
-      </a-row> -->
     </a-card>
-    <!-- <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
-      <img alt="example" style="width: 100%" :src="previewImage" />
-    </a-modal> -->
-    <banner-edit-modal ref="edit_banner"/>
+
+    <banner-edit-modal ref="edit_banner" @ok="cloneEditBanner" />
   </div>
 </template>
 <script>
@@ -136,6 +137,16 @@ export default {
     this.getBannerList()
   },
   methods: {
+    showConfirm () {
+      this.$confirm({
+        title: '删除',
+        content: '确认删除这些图片吗？',
+        onOk () {
+          this.delFewBanner()
+        },
+        onCancel () {}
+      })
+    },
     getBannerList () {
       this.tableLoading = true
       BannersManager('get')
@@ -172,6 +183,9 @@ export default {
     onSelectChange (selectedRowKeys) {
       // console.log('selectedRowKeys changed: ', selectedRowKeys)
       this.selected_row_keys = selectedRowKeys
+    },
+    cloneEditBanner () {
+      this.getBannerList()
     },
     handleCancel () {
       this.previewVisible = false

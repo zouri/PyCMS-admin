@@ -8,6 +8,9 @@
       </div>
       <a-tree
         checkable
+        :blockNode="true"
+        :show-line="true"
+        :show-icon="true"
         :treeData="tree_data"
         :replaceFields="replace_fields"
         :checkStrictly="true"
@@ -19,9 +22,11 @@
     </a-card>
 
     <!-- 新建栏目表单 -->
-    <a-modal v-model="add_col_model" title="新增栏目">
-
-      <a-form :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" @submit="handleSubmit" >
+    <a-modal v-model="add_col_model" @ok="handleSubmit">
+      <span slot="title">
+        编辑栏目
+      </span>
+      <a-form :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
         <a-form-item label="标题">
           <a-input
             v-decorator="[ 'title', { rules: [{ required: true, message: '请输入栏目标题' }] }, ]"
@@ -30,7 +35,7 @@
         </a-form-item>
         <a-form-item label="栏目ID">
           <a-input
-            v-decorator="[ 'name', { rules: [{ required: true, message: '请输入栏目ID' }] }, ]"
+            v-decorator="[ 'id', { rules: [{ required: true, message: '请输入栏目ID' }] }, ]"
             placeholder="栏目ID如: 'xinwen'"
           />
         </a-form-item>
@@ -40,11 +45,12 @@
 </template>
 
 <script>
-import { GetColumns } from '@/api/column_manager'
+import { GetColumns, CreateColumn, DeleteColumns } from '@/api/column_manager'
 export default {
   name: 'ColumnManager',
   data () {
     return {
+      edit_col_model: false,
       add_col_model: false,
       tree_data: null,
       replace_fields: {
@@ -85,16 +91,43 @@ export default {
           console.log(error)
         })
     },
+    // 表单内容
     handleSubmit (e) {
-      console.log(e, 'eeeee')
+      e.preventDefault()
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          CreateColumn(values)
+            .then(response => {
+              this.initTreeData()
+              this.edit_col_model = false
+              })
+            .catch(error => {
+              this.$notification['error']({
+                message: '错误',
+                description: ((error.response || {}).data || {}).message || '请求出现错误，请稍后再试',
+                duration: 4
+              })
+            })
+        }
+      })
+    },
+    delColumn () {
+      DeleteColumns(this.selected_row_keys)
+      .then(response => {
+        this.initTreeData()
+        })
+      .catch(error => {
+        console.log(error, 'abcdef')
+        this.$notification['error']({
+          message: '错误',
+          description: ((error.response || {}).data || {}).message || '请检查要删除的栏目是否为空',
+          duration: 4
+        })
+      })
     },
     addColumn () {
       // CreateCol()
       console.log('abcdef')
-    },
-    delColumn () {
-      // CreateCol()
-      console.log('删除,删除')
     }
   }
 }

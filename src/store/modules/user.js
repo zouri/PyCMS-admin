@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import storage from 'store'
 import { login, getInfo, logout } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
@@ -38,9 +38,9 @@ const user = {
       console.log(userInfo, 'userInfo')
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
+          console.log(response, '登陆返回值')
           if (response.error_code === 0) {
-            console.log('token')
-            Vue.ls.set(ACCESS_TOKEN, response.data.token, 7 * 24 * 60 * 60 * 1000)
+            storage.set(ACCESS_TOKEN, response.data.token, 7 * 24 * 60 * 60 * 1000)
             commit('SET_TOKEN', response.data.token)
           }
           resolve(response)
@@ -54,8 +54,8 @@ const user = {
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
         getInfo().then(response => {
-          // console.log(response, '返回数据')
-          // console.log(response.data, '返回数据')
+          console.log(response, '返回数据')
+          console.log(response.data, '返回数据')
           const result = response.data
 
           commit('SET_ROLES', result.role)
@@ -95,7 +95,7 @@ const user = {
         }).finally(() => {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
-          Vue.ls.remove(ACCESS_TOKEN)
+          storage.remove(ACCESS_TOKEN)
         })
       })
     }

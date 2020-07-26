@@ -1,3 +1,5 @@
+import config from '@/config/defaultSettings'
+
 export const setDocumentTitle = function (title) {
   document.title = title
   const ua = navigator.userAgent
@@ -16,4 +18,4 @@ export const setDocumentTitle = function (title) {
   }
 }
 
-export const domTitle = '走日科技'
+export const domTitle = config.title

@@ -128,7 +128,7 @@ export default {
           this.model = true
           this.modelSrc = img
           formData.append('file', data, this.fileName)
-          this.$http.post('/upload/img', formData, { contentType: false, processData: false, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+          this.$http.post('/media/upload', formData, { contentType: false, processData: false, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
             .then((response) => {
               console.log('upload response:', response)
               if (response.error_code === 0) {

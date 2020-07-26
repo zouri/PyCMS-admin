@@ -81,14 +81,14 @@
   </a-modal>
 </template>
 <script>
-import Vue from 'vue'
+import storage from 'store'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { UpdateBanner, BannersManager } from '@/api/public_info'
 export default {
   data () {
     return {
       headers: {
-        'Access-Token': Vue.ls.get(ACCESS_TOKEN)
+        'Access-Token': storage.get(ACCESS_TOKEN)
       },
       visible: false,
       title: '',

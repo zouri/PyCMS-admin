@@ -8,10 +8,13 @@
   </div>
 </template>
 <script>
+  import storage from 'store'
+  import { ACCESS_TOKEN } from '@/store/mutation-types'
 // import { axios } from '@/utils/request'
   import tinymce from 'tinymce/tinymce'
   import Editor from '@tinymce/tinymce-vue'
   import 'tinymce/themes/silver'
+  import 'tinymce/icons/default'
   // 编辑器插件plugins
   // 更多插件参考：https://www.tiny.cloud/docs/plugins/
   import 'tinymce/plugins/image'// 插入上传图片插件
@@ -111,6 +114,61 @@
               ]
             }
           ],
+          file_picker_types: 'media',
+          file_picker_callback: (cb, value, meta) => {
+            // 当点击meidia图标上传时,判断meta.filetype == 'media'有必要，因为file_picker_callback是media(媒体)、image(图片)、file(文件)的共同入口
+            if (meta.filetype === 'media') {
+              // 创建一个隐藏的type=file的文件选择input
+              const input = document.createElement('input')
+              input.setAttribute('type', 'file')
+              input.onchange = function () {
+                const file = this.files[0] // 只选取第一个文件。如果要选取全部，后面注意做修改
+                let xhr, formData
+                // eslint-disable-next-line prefer-const
+                xhr = new XMLHttpRequest()
+                xhr.open('POST', '/apps/api/media/upload')
+                xhr.setRequestHeader('Access-Token', storage.get(ACCESS_TOKEN))
+                xhr.upload.onprogress = function (e) {
+                  // 进度(e.loaded / e.total * 100)
+                }
+                xhr.onerror = function () {
+                  // 根据自己的需要添加代码
+                  console.log(xhr.status)
+                  // eslint-disable-next-line no-useless-return
+                  return
+                }
+                xhr.onload = function () {
+                  if (xhr.status < 200 || xhr.status >= 300) {
+                    console.log('HTTP 错误: ' + xhr.status)
+                    return
+                  }
+                  let response
+                  // eslint-disable-next-line prefer-const
+                  response = JSON.parse(xhr.responseText)
+                  // 假设接口返回JSON数据为{status: 0, msg: "上传成功", data: {location: "/localImgs/1546434503854.mp4"}}
+                  if (response.error_code === 0) {
+                    // 接口返回的文件保存地址
+                    const mediaLocation = response.data.url
+                    alert(mediaLocation)
+                    // cb()回调函数，将mediaLocation显示在弹框输入框中
+                    cb(mediaLocation, { title: file.name })
+                  } else {
+                    console.log(response.message)
+                    // eslint-disable-next-line no-useless-return
+                    return
+                  }
+                }
+                // eslint-disable-next-line prefer-const
+                formData = new FormData()
+                // 假设接口接收参数为file,值为选中的文件
+                formData.append('file', file)
+                // 正式使用将下面被注释的内容恢复
+                xhr.send(formData)
+              }
+              // 触发点击
+              input.click()
+            }
+          },
           // 此处为图片上传处理函数，这个直接用了base64的图片形式上传图片，
           // 如需ajax上传可参考 https://www.tiny.cloud/docs/configure/file-image-upload/#images_upload_handler
           images_upload_handler: (blobInfo, success, failure) => {
@@ -126,7 +184,8 @@
               var xhr, formData
               xhr = new XMLHttpRequest()
               xhr.withCredentials = false
-              xhr.open('POST', '/apps/api/upload/img')
+              xhr.open('POST', '/apps/api/media/upload')
+              xhr.setRequestHeader('Access-Token', storage.get(ACCESS_TOKEN))
               xhr.onload = function () {
                 var response
                 if (xhr.status !== 200) {
@@ -134,8 +193,8 @@
                   return
                 }
                 response = JSON.parse(xhr.responseText)
-                console.log(response, '这里是数据')
-                console.log(typeof response.data, '这里是数据类型')
+                // console.log(response, '这里是数据')
+                // console.log(typeof response.data, '这里是数据类型')
                 if (!response.data || typeof response.data.abs_path !== 'string') {
                   failure('Invalid JSON: ' + xhr.responseText)
                   return

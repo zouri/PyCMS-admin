@@ -1,59 +1,51 @@
 <template>
-  <div class="clearfix">
-    <a-card>
-      <div slot="title">
-        <span style="margin-right: 30px">轮播图管理</span>
-        <a-button icon="sync" @click="getBannerList" :loading="tableLoading" title="刷新本地数据" class="action_btn" />
-      </div>
-      <div slot="extra">
-        <!-- <a-popconfirm
-          title="确认删除这些图片吗?"
-          @confirm="delFewBanner"
-          okText="Yes"
-          cancelText="No"
-          :disabled="has_selected"
-        >
-          <a-button :disabled="has_selected" type="danger" class="action_btn">删除</a-button>
-        </a-popconfirm> -->
+  <div>
+    <page-header-wrapper>
+      <a-card :bordered="false">
         <a-button :disabled="has_selected" @click="showConfirm" type="danger" class="action_btn">删除</a-button>
         <a-button @click="$refs.edit_banner.edit('new')" type="primary" title="添加图片" >
           添加
         </a-button>
-      </div>
-      <a-row>
-        <a-table
-          :columns="columns"
-          :data-source="dataList"
-          :loading="tableLoading"
-          :rowSelection="{ selectedRowKeys: selected_row_keys, onChange: onSelectChange }"
-          rowKey="id"
-        >
-          <span slot="id" slot-scope="id">
-            #{{ id }}
-          </span>
-          <span slot="url" slot-scope="url">
-            <img :src="url" style="height: 80px">
-          </span>
-          <template slot="operation" slot-scope="text, row" >
-            <a @click="$refs.edit_banner.edit(row)">编辑</a>
-            <a-divider type="vertical" />
+        <!-- <div slot="title">
+          <span style="margin-right: 30px">轮播图管理</span>
+          <a-button icon="sync" @click="getBannerList" :loading="tableLoading" title="刷新本地数据" class="action_btn" />
+        </div> -->
+        <!-- <div slot="extra">
+        </div> -->
+        <a-row>
+          <a-table
+            :columns="columns"
+            :data-source="dataList"
+            :loading="tableLoading"
+            :rowSelection="{ selectedRowKeys: selected_row_keys, onChange: onSelectChange }"
+            rowKey="id"
+          >
+            <!-- <span slot="id" slot-scope="id">
+              #{{ id }}
+            </span> -->
+            <span slot="url" slot-scope="url">
+              <img :src="`/static/upload_file/` + url" style="height: 80px">
+            </span>
+            <template slot="operation" slot-scope="text, row" >
+              <a @click="$refs.edit_banner.edit(row)">编辑</a>
+              <a-divider type="vertical" />
 
-            <a-popconfirm
-              title="确认删除这条吗"
-              ok-text="Yes"
-              cancel-text="No"
-              @confirm="delFewBanner(row.id)"
-              @cancel="cancel"
-            >
-              <a href="#">删除</a>
-            </a-popconfirm>
-          </template>
-        </a-table>
-      </a-row>
-      <a-divider>效果预览</a-divider>
-    </a-card>
+              <a-popconfirm
+                title="确认删除这条吗"
+                ok-text="Yes"
+                cancel-text="No"
+                @confirm="delFewBanner(row.id)"
+              >
+                <a href="#">删除</a>
+              </a-popconfirm>
+            </template>
+          </a-table>
+        </a-row>
+        <!-- <a-divider>效果预览</a-divider> -->
+      </a-card>
 
-    <banner-edit-modal ref="edit_banner" @ok="cloneEditBanner" />
+      <banner-edit-modal ref="edit_banner" @ok="cloneEditBanner" />
+    </page-header-wrapper>
   </div>
 </template>
 <script>
@@ -70,7 +62,7 @@ function getBase64 (file) {
 }
 const columns = [
   {
-    title: '编号',
+    title: '#',
     dataIndex: 'id',
     key: 'id',
     width: 80,
@@ -138,11 +130,12 @@ export default {
   },
   methods: {
     showConfirm () {
+      const _this = this
       this.$confirm({
         title: '删除',
         content: '确认删除这些图片吗？',
         onOk () {
-          this.delFewBanner()
+          _this.delFewBanner()
         },
         onCancel () {}
       })
@@ -151,7 +144,6 @@ export default {
       this.tableLoading = true
       BannersManager('get')
         .then(res => {
-          // console.log(res)
           if (res.error_code !== 0) {
             this.$message.error('获取数据失败')
           } else {

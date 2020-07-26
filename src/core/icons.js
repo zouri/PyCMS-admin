@@ -7,7 +7,5 @@
  * 所有图标均从这里加载，方便管理
  */
 import bxAnaalyse from '@/assets/icons/bx-analyse.svg?inline' // path to your '*.svg?inline' file.
-import articleManager from '@/assets/icons/article-manager.svg?inline' // path to your '*.svg?inline' file.
-import columnManager from '@/assets/icons/column-manager.svg?inline' // path to your '*.svg?inline' file.
 
-export { bxAnaalyse, articleManager, columnManager }
+export { bxAnaalyse }

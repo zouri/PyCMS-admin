@@ -1,15 +1,11 @@
 <template>
-  <div class="page-header-index-wide">
-    <a-card :bodyStyle="{padding: 0}">
-      <div slot="title">
-        <span style="margin-right: 30px">文档管理</span>
+  <page-header-wrapper>
+    <a-card :bordered="false">
+      <a-row>
         <a-button icon="sync" @click="GetDocumentList" :loading="tableLoading" title="刷新本地数据" class="action_btn" />
         <!-- <a-input-search placeholder="输入你的关键词" @search="onSearch">
           <a-button type="primary" icon="sync" @click="GetDocumentList"></a-button>
         </a-input-search> -->
-      </div>
-
-      <div slot="extra">
         <a-button
           @click="EditDocument('new')"
           type="primary"
@@ -18,17 +14,8 @@
         >
           新建
         </a-button>
-        <!-- <a-popconfirm
-          title="确认删除这些栏目吗?"
-          @confirm="delFewDocument"
-          okText="Yes"
-          cancelText="No"
-          :disabled="has_selected"
-        >
-          <a-button :disabled="has_selected" type="danger" class="action_btn">删除</a-button>
-        </a-popconfirm> -->
         <a-button :disabled="has_selected" @click="showConfirm" type="danger" class="action_btn">删除</a-button>
-      </div>
+      </a-row>
       <a-row>
         <a-table
           rowKey="id"
@@ -65,7 +52,7 @@
         </a-table>
       </a-row>
     </a-card>
-  </div>
+  </page-header-wrapper>
 </template>
 
 <script>
@@ -168,11 +155,12 @@ export default {
   },
   methods: {
     showConfirm () {
+      const _this = this
       this.$confirm({
         title: '删除',
-        content: '确认删除这些栏目吗？',
+        content: '确认删除这些文档吗？',
         onOk () {
-          this.delFewDocument()
+          _this.delFewDocument()
         },
         onCancel () {}
       })
@@ -181,7 +169,7 @@ export default {
       this.GetDocumentList()
     },
     onSelectChange (selectedRowKeys) {
-      console.log('selectedRowKeys changed: ', selectedRowKeys)
+      // console.log('selectedRowKeys changed: ', selectedRowKeys)
       this.selected_row_keys = selectedRowKeys
     },
     onPageChange (e) {
@@ -218,16 +206,15 @@ export default {
         })
     },
     EditDocument (docId) {
-      console.log(`/document/editor/${this.current_column}/${docId}`)
-      alert(1)
+      // console.log(`/document/editor/${this.current_column}/${docId}`)
       this.$router.push({ path: `/document/editor/${this.current_column}/${docId}` })
     },
     UpdateStatus (row, statusCode) {
       this.tableLoading = true
       docUpdateAttr(row.id, 'status', statusCode)
         .then(response => {
-          const data = response.data
-          console.log(data, 'ok')
+          // const data = response.data
+          // console.log(data, 'ok')
           this.GetDocumentList()
           this.tableLoading = false
         })

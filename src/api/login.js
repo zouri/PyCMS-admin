@@ -40,7 +40,14 @@ export function getInfo (username = 'me') {
 
 export function getCurrentUserNav (token) {
   return axios({
-    url: '/user/nav',
+    url: '/user/column/nav',
+    method: 'get'
+  })
+}
+
+export function getCurrentUserColumn (token) {
+  return axios({
+    url: '/column',
     method: 'get'
   })
 }

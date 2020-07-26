@@ -1,0 +1,26 @@
+diff --git a/node_modules/@ant-design-vue/pro-layout/es/utils/dynamicTheme.js b/node_modules/@ant-design-vue/pro-layout/es/utils/dynamicTheme.js
+index a490b46..32d97e6 100644
+--- a/node_modules/@ant-design-vue/pro-layout/es/utils/dynamicTheme.js
++++ b/node_modules/@ant-design-vue/pro-layout/es/utils/dynamicTheme.js
+@@ -17,7 +17,7 @@ export var themeColor = {
+     var options = {
+       newColors: this.getAntdSerials(newColor), // new colors array, one-to-one corresponde with `matchColors`
+       changeUrl: function changeUrl(cssUrl) {
+-        return '/' + cssUrl; // while router is not `hash` mode, it needs absolute path
++        return '/apps/admin/' + cssUrl; // while router is not `hash` mode, it needs absolute path
+       }
+     };
+     return client.changer.changeColor(options, Promise);
+diff --git a/node_modules/@ant-design-vue/pro-layout/lib/utils/dynamicTheme.js b/node_modules/@ant-design-vue/pro-layout/lib/utils/dynamicTheme.js
+index 9ee736a..b9e787e 100644
+--- a/node_modules/@ant-design-vue/pro-layout/lib/utils/dynamicTheme.js
++++ b/node_modules/@ant-design-vue/pro-layout/lib/utils/dynamicTheme.js
+@@ -32,7 +32,7 @@ var themeColor = exports.themeColor = {
+     var options = {
+       newColors: this.getAntdSerials(newColor), // new colors array, one-to-one corresponde with `matchColors`
+       changeUrl: function changeUrl(cssUrl) {
+-        return '/' + cssUrl; // while router is not `hash` mode, it needs absolute path
++        return '/apps/admin/' + cssUrl; // while router is not `hash` mode, it needs absolute path
+       }
+     };
+     return _client2['default'].changer.changeColor(options, Promise);

@@ -24,13 +24,15 @@ const constantRouterComponents = {
   'IndexManager': () => import('@/views/banner/Index'),
   'IndexBanner': () => import('@/views/banner/Index'),
   'CacheManager': () => import('@/views/banner/Index'),
+  'MediaManager': () => import('@/views/media/Index'),
 
   // 文章管理
   'DocumentManager': () => import(/* webpackChunkName: "fail" */ '@/views/document/Index'),
   'DocumentEdit': () => import(/* webpackChunkName: "fail" */ '@/views/document/Editor'),
 
   // 栏目管理
-  'ColumnManager': () => import(/* webpackChunkName: "fail" */ '@/views/column/Index')
+  'ColumnManager': () => import(/* webpackChunkName: "fail" */ '@/views/column/IndexTree')
+  // 'ColumnManager': () => import(/* webpackChunkName: "fail" */ '@/views/column/Index')
 }
 
 // 前端未找到页面路由（固定不用改）
@@ -47,10 +49,22 @@ const otherRouter = [
     path: '/index',
     meta: {
       icon: 'dashboard',
-      title: '网站设置',
+      title: '系统设置',
       show: true
     },
     component: 'IndexManager'
+  },
+  {
+    id: 'media',
+    name: 'media',
+    parentId: 'root',
+    path: '/media',
+    props: true,
+    meta: {
+      icon: 'folder',
+      title: '媒体管理'
+    },
+    component: 'MediaManager'
   },
   {
     id: 'banner',
@@ -82,9 +96,8 @@ const otherRouter = [
     path: '/column',
     parentId: 'root',
     meta: {
-      icon: 'align-left',
-      title: '栏目管理',
-      show: false
+      icon: 'cluster',
+      title: '栏目管理'
     },
     component: 'ColumnManager'
   },
@@ -93,8 +106,8 @@ const otherRouter = [
     parentId: 'root',
     name: 'document',
     meta: {
-      icon: 'cluster',
-      title: '信息管理',
+      icon: 'align-left',
+      title: '内容管理',
       show: true
     },
     component: 'RouteView',
